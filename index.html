@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+    <style>
+        h1 {
+            font-family: cursive;
+            font-size: 40px;
+            text-align: center;
+        }
+        body {
+            font-family: Arial;
+            background-color: rgb(126, 212, 145);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .task {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+    <link rel="shortcut icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqykAPJ_6Tq2bntdv6fuQTkpRx7bjbq1fnkw&usqp=CAU" type="image/x-icon">
+</head>
+<body>
+    <div class="container">
+        <h1>To Do List</h1>
+        <form id="todo-form">
+            <div class="form-group">
+                <label for="task-title">Task Title:</label>
+                <input type="text" id="task-title" name="task-title" required>
+            </div>
+            <div class="form-group">
+                <label for="task-description">Task Description:</label>
+                <textarea id="task-description" name="task-description" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn">Add Task</button>
+        </form>
+        <br>
+        <div id="tasks-table">
+            <ul id="tasks"></ul>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('todo-form');
+        const tasksContainer = document.getElementById('tasks');
+        let counter = 0; // Inisialisasi counter
+        const tasks = []; // Array untuk menyimpan tugas-tugas
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('task-title').value;
+            const description = document.getElementById('task-description').value;
+
+            const currentDate = new Date();
+            const formattedDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+
+            const task = document.createElement('li');
+            task.classList.add('task');
+            const taskId = ++counter;
+            task.dataset.id = taskId; // Tambahkan atribut data-id pada elemen task
+            task.innerHTML = `
+                <p>${taskId}</p>
+                <div>
+                    <h3>${title}</h3>
+                    <p>${description}</p>
+                </div>
+                <p>Created on: ${formattedDate}</p>
+                <button class="btn btn-delete">Delete Task</button>
+            `;
+            tasksContainer.appendChild(task);
+
+            // Tambahkan tugas ke dalam array
+            tasks.push({ id: taskId, element: task });
+
+            document.getElementById('task-title').value = '';
+            document.getElementById('task-description').value = '';
+
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+            deleteButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    const taskId = parseInt(button.parentElement.dataset.id, 10);
+                    const index = tasks.findIndex((task) => task.id === taskId);
+                    tasks.splice(index, 1); // Hapus tugas dari array
+                    button.parentElement.remove();
+
+                    // Perbarui nomor urut tugas setelah menghapus
+                    tasks.forEach((task, index) => {
+                        task.element.querySelector('p').textContent = index + 1;
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
